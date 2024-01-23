@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->foreign('user_id')
+            $table->integer('creator_id');
+            $table->foreign('creator_id')
                   ->references('id')
                   ->on('users');
             $table->text('description')->nullable();
-            $table->binary('image')->nullable();
+            $table->text('image')->nullable()->unique();
             $table->timestamp('created_at');
         });
     }

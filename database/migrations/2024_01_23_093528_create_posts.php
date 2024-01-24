@@ -19,7 +19,7 @@ return new class extends Migration
                   ->on('users');
             $table->text('description')->nullable();
             $table->text('image')->nullable()->unique();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

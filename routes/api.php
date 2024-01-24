@@ -25,3 +25,4 @@ Route::get('posts', [PostController::class, 'all']);
 Route::post('posts', [PostController::class, 'create']);
 
 Route::post('user', [UserController::class, 'create']);
+Route::get('user/{id}', [UserController::class, 'read']);

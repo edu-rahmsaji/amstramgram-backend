@@ -24,4 +24,13 @@ class UserController extends Controller
             return ['status' => false, 'message' => "An error has occurred while creating the user"];       
         }
     }
+
+    public function read(Request $request)
+    {
+        $userId = $request->route('id');
+
+        $user = User::findOrFail($userId);
+
+        return $user;
+    }
 }

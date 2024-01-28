@@ -2,7 +2,7 @@
 /node_modules
 /public/build
 /public/hot
-/public/storage
+# /public/storage => Since I'm unable to generate images, I'll store dummy images for now.
 /storage/*.key
 /vendor
 .env

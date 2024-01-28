@@ -8,20 +8,20 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
-     * Using json to store arrays : https://stackoverflow.com/a/32955501
      */
     public function up(): void
     {
-
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('follows', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->foreign('user_id')
+            $table->integer('followed_id');
+            $table->foreign('followed_id')
                   ->references('id')
                   ->on('users');
-            $table->text('text')->nullable();
-            $table->json('image_paths')->nullable();
+            $table->integer('follower_id');
+            $table->foreign('follower_id')
+                  ->references('id')
+                  ->on('users');
+            $table->unique(['followed_id', 'follower_id']);
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('follows');
     }
 };

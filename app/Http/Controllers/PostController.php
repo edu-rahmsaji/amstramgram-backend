@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use Carbon\Carbon;
+use App\Models\{Post,User};
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -14,6 +13,12 @@ class PostController extends Controller
     public function all()
     {
         return Post::all();
+    }
+
+    public function read(Request $request)
+    {
+        $userId = $request->route('id');
+        return User::whereId($userId)->all();
     }
 
     /**

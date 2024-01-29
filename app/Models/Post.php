@@ -19,7 +19,7 @@ class Post extends Model
     /**
      * Get the user that created this post.
      */
-    public function post(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

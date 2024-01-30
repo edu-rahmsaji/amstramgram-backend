@@ -18,7 +18,7 @@ class PostController extends Controller
     public function read(Request $request)
     {
         $userId = $request->route('id');
-        return User::whereId($userId)->all();
+        return Post::where('user_id', '=', $userId)->get();
     }
 
     /**

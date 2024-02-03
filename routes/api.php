@@ -36,6 +36,10 @@ Route::get('user/{id}/posts/liked', [PostLikeController::class, 'likedPosts']);
 Route::post('posts', [PostController::class, 'create']);
 Route::get('posts/{id}/likers', [PostController::class, 'likers']);
 
+Route::get('posts/{post}', function (Post $post) {
+    return new PostResource($post);
+});
+
 Route::post('user', [UserController::class, 'create']);
 Route::get('user/{user}', function (User $user) {
     return new UserResource($user);

@@ -2,7 +2,12 @@
 
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\UserController;
+use App\Http\Resources\PostResource;
+use App\Http\Resources\UserResource;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,14 +26,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('posts', [PostController::class, 'all']);
-Route::get('user/{id}/posts', [PostController::class, 'read']);
+Route::get('posts', function () {
+    return PostResource::collection(Post::all());
+});
+Route::get('user/{user}/posts', function (User $user) {
+    return PostResource::collection(Post::where('user_id', '=', $user->id)->get());
+});
+Route::get('user/{id}/posts/liked', [PostLikeController::class, 'likedPosts']);
 Route::post('posts', [PostController::class, 'create']);
+Route::get('posts/{id}/likers', [PostController::class, 'likers']);
 
 Route::post('user', [UserController::class, 'create']);
-Route::get('user/{id}', [UserController::class, 'read']);
+Route::get('user/{user}', function (User $user) {
+    return new UserResource($user);
+});
 
 Route::get('user/{id}/followers', [FollowController::class, 'readFollowers']);
 Route::get('user/{id}/followed', [FollowController::class, 'readFollowed']);
-Route::get('user/{id}/followers/count', [FollowController::class, 'followerCount']);
-Route::get('user/{id}/followed/count', [FollowController::class, 'followedCount']);

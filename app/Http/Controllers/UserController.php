@@ -17,6 +17,7 @@ class UserController extends Controller
         $userObj->last_name = $request->last_name;
         $userObj->email = $request->email;
         $userObj->password = $request->password;
+        $userObj->biography = $request->biography;
 
         if ($userObj->save()) {
             return ['status' => true, 'message' => "User created successfully"];       

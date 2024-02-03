@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Follow;
 use App\Models\Post;
+use App\Models\PostLike;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $userCount = 10;
-        $postCountPerUser = 3;
+        $postCountPerUser = 50;
 
         User::factory($userCount)
             ->has(
@@ -30,7 +31,7 @@ class DatabaseSeeder extends Seeder
             )
             ->create();
 
-        $userIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        $userIds = User::pluck('id')->toArray();
 
         foreach ($userIds as $userId) {
             $followCount = fake()->numberBetween(0, 9);
@@ -49,6 +50,31 @@ class DatabaseSeeder extends Seeder
                                 return [
                                     'followed_id' => $followedId,
                                     'follower_id' => $userId
+                                ];
+                            })
+                            ->create();
+            }
+        }
+
+
+        $postIds = Post::pluck('id')->toArray();
+
+        foreach ($userIds as $userId) {
+            $likeCount = sizeof($postIds);
+
+            $randomIndices = [];
+            for ($i = 0; $i < $likeCount; $i++) {
+                $randomIndices[] = array_rand($postIds);
+            }
+
+            $likedPostIds = array_values(Arr::only($postIds, $randomIndices));
+
+            foreach ($likedPostIds as $likedPost) {
+                PostLike::factory()
+                            ->state(function (array $attributes) use ($likedPost, $userId) {
+                                return [
+                                    'post_id' => $likedPost,
+                                    'user_id' => $userId
                                 ];
                             })
                             ->create();

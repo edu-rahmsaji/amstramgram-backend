@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Post,User};
+use App\Models\{Post, PostLike, User};
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -19,6 +19,13 @@ class PostController extends Controller
     {
         $userId = $request->route('id');
         return Post::where('user_id', '=', $userId)->get();
+    }
+
+    public function likers(Request $request)
+    {
+        $postId = $request->route('id');
+        $userIds = PostLike::where('post_id','=', $postId)->get()->pluck('user_id');
+        return User::find($userIds);
     }
 
     /**

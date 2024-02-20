@@ -16,11 +16,13 @@ return new class extends Migration
             $table->integer('post_id');
             $table->foreign('post_id')
                   ->references('id')
-                  ->on('posts');
+                  ->on('posts')
+                  ->onDelete('cascade');
             $table->integer('user_id');
             $table->foreign('user_id')
                   ->references('id')
-                  ->on('users');
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 

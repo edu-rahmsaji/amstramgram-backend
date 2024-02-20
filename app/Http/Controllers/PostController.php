@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\{Post, PostLike, User};
+use Exception;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -10,15 +12,43 @@ class PostController extends Controller
     /**
      * Returns a list of all the posts stored in the database.
      */
-    public function all()
+    public function readAll()
     {
-        return Post::all();
+        try {
+            $data = PostResource::collection(Post::all());
+            return ["success" => true, "data" => $data, "message" => "All posts read successfully"];
+        } catch (Exception $err) {
+            error_log($err);
+            return ["success" => false, "data" => null, "message" => "An error occurred whilst reading all the posts"];
+        }
     }
 
-    public function read(Request $request)
-    {
-        $userId = $request->route('id');
-        return Post::where('user_id', '=', $userId)->get();
+    /**
+     * Returns all the user's posts via it's id.
+     * @param User $user The user whose posts to read
+     */
+    public function readAllByUser(User $user) {
+        try {
+            $data = PostResource::collection(Post::where('user_id', '=', $user->id)->get());
+            return ["success" => true, "data" => $data, "message" => "User's posts read successfully"];
+        } catch (Exception $err) {
+            error_log($err);
+            return ["success" => false, "data" => null, "message" => "An error occurred whilst reading the user's posts"];
+        }
+    }
+
+    /**
+     * Returns a post via it's id.
+     * @param Post $post The post to read
+     */
+    public function read(Post $post) {
+        try {
+            $data = new PostResource($post);
+            return ["success" => true, "data" => $data, "message" => "Post read successfully"];
+        } catch (Exception $err) {
+            error_log($err);
+            return ["success" => false, "data" => null, "message" => "An error occurred whilst reading the post"];
+        }
     }
 
     public function likers(Request $request)
@@ -33,21 +63,21 @@ class PostController extends Controller
      */
     public function create(Request $request)
     {
-        $filename = $this->uploadImage($request);
+        /* $filename = $this->uploadImage($request);
 
         if (!$filename) {
-            return ['status' => false, 'message' => "Unable to upload the file."];
-        }
+            return ['success' => false, 'message' => "Unable to upload the file."];
+        } */
 
         $postObj = new Post;
-        $postObj->creator_id = $request->creator_id;
-        $postObj->description = $request->description;
-        $postObj->image = $filename;
+        $postObj->user_id = $request->userId;
+        $postObj->text = $request->text;
+        $postObj->image_paths = "[]"/* json_encode(["storage/posts/$filename"]) */;
 
         if ($postObj->save()) {
-            return ['status' => true, 'message' => "Image uploded successfully"];       
+            return ['success' => true, 'message' => "Post created successfully"];       
         } else {
-            return ['status' => false, 'message' => "Error : Image not uploded successfully"];       
+            return ['success' => false, 'message' => "Error : post not created"];       
         }
     }
 
@@ -57,6 +87,8 @@ class PostController extends Controller
      * @return string|null The unique name of the stored image, or `null` if something went wrong.
      */
     private function uploadImage(Request $request): string|null {
+        // Uploading multiple images : https://stackoverflow.com/questions/42643265/how-to-upload-multiple-image-in-laravel
+
         if ($request->hasFile('image')) {
             $filename = $request->file('image')->getClientOriginalName(); // get the file name
             $getfilenamewitoutext = pathinfo($filename, PATHINFO_FILENAME); // get the file name without extension
@@ -67,5 +99,35 @@ class PostController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Updates a post via it's id with the given data.
+     * @param Post $post The post to update
+     */
+    public function update(Request $request, int $id) {
+        try {
+            $post = Post::find($id);
+            $post->text = $request->input("text");
+            $post->save();
+            return ["success" => true, "message" => "Post updated successfully"];
+        } catch (Exception $err) {
+            error_log($err);
+            return ["success" => false, "message" => "An error occurred whilst updating a post"];
+        }
+    }
+
+    /**
+     * Deletes a post via it's id.
+     * @param Post $post The post to delete
+     */
+    public function delete(Post $post) {
+        try {
+            Post::where("id", "=", $post->id)->delete();
+            return ["success" => true, "message" => "Post deleted successfully"];
+        } catch (Exception $err) {
+            error_log($err);
+            return ["success" => false, "message" => "An error occurred whilst deleting a post"];
+        }
     }
 }

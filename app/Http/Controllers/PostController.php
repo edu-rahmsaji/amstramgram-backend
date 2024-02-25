@@ -108,9 +108,12 @@ class PostController extends Controller
     public function update(Request $request, int $id) {
         try {
             $post = Post::find($id);
-            $post->text = $request->input("text");
-            $post->save();
-            return ["success" => true, "message" => "Post updated successfully"];
+            $post->text = $request->text;
+            if ($post->save()) {
+                return ["success" => true, "message" => "Post updated successfully"];
+            } else {
+                return ["success" => false, "message" => "Post updated failed"];
+            }
         } catch (Exception $err) {
             error_log($err);
             return ["success" => false, "message" => "An error occurred whilst updating a post"];

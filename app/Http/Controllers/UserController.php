@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -26,12 +27,7 @@ class UserController extends Controller
         }
     }
 
-    public function read(Request $request)
-    {
-        $userId = $request->route('id');
-
-        $user = User::findOrFail($userId);
-
-        return $user;
+    public function read(User $user) {
+        return new UserResource($user);
     }
 }

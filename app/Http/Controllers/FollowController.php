@@ -2,32 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\Follow;
-use Illuminate\Http\Request;
+use App\Models\User;
 
 class FollowController extends Controller
 {
-    public function readFollowers(Request $request)
+    public function followers(User $user)
     {
-        $userId = $request->route('id');
-        return Follow::where('follower_id', '=', $userId)->get();
+        $followers = Follow::where('followed_id', '=', $user->id);
+        $followerIds = $followers->pluck("follower_id");
+        $followerAccounts = User::find($followerIds);
+
+        $data = UserResource::collection($followerAccounts);
+
+        return ["success" => true, "data" => $data, "message" => "Read followers successfully"];
     }
 
-    public function readFollowed(Request $request)
+    public function following(User $user)
     {
-        $userId = $request->route('id');
-        return Follow::where('followed_id', '=', $userId)->get();
-    }
+        $followings = Follow::where('follower_id', '=', $user->id);
+        $followingIds = $followings->pluck("followed_id");
+        $followingAccounts = User::find($followingIds);
 
-    public function followerCount(Request $request)
-    {
-        $userId = $request->route('id');
-        return Follow::where('follower_id', '=', $userId)->count();
-    }
+        $data = UserResource::collection($followingAccounts);
 
-    public function followedCount(Request $request)
-    {
-        $userId = $request->route('id');
-        return Follow::where('followed_id', '=', $userId)->count();
+        return ["success" => true, "data" => $data, "message" => "Read followed accounts successfully"];
     }
 }

@@ -28,6 +28,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('user/{id}/posts/liked', [PostLikeController::class, 'likedPosts']);
+Route::/* middleware('auth:sanctum')-> */get('user/{user}', [UserController::class, 'read']);
+Route::post('user', [UserController::class, 'create']);
+
+Route::get('user/{user}/followers', [FollowController::class, 'followers']);
+Route::get('user/{user}/following', [FollowController::class, 'following']);
+
 Route::get('posts/{id}/likers', [PostController::class, 'likers']);
 
 Route::get('posts', [PostController::class, 'readAll']);
@@ -41,14 +47,6 @@ Route::post('posts/like', function (Request $request) {
     PostLike::create($request);
     return true;
 });
-
-Route::post('user', [UserController::class, 'create']);
-Route::/* middleware('auth:sanctum')-> */get('user/{user}', function (User $user) {
-    return new UserResource($user);
-});
-
-Route::get('user/{id}/followers', [FollowController::class, 'readFollowers']);
-Route::get('user/{id}/followed', [FollowController::class, 'readFollowed']);
 
 Route::get('/tokens/create/{user}', function (User $user) {
     $token = $user->createToken("sanctum_token");
